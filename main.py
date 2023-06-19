@@ -3,6 +3,14 @@ from bs4 import BeautifulSoup as bs
 import json
 import sqlite3
 
+def saveToDatabase(deliveredDate, order_ids):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    for order_id in order_ids:
+        c.execute("INSERT INTO delivered_orders VALUES (?, ?)", (order_id, deliveredDate))
+    conn.commit()
+    conn.close()
+
 
 app = Flask(__name__)
 
@@ -10,13 +18,27 @@ app = Flask(__name__)
 def index():
     return 'Hello World!'
 
-def saveToDatabase(deliveredDate, order_ids):
+@app.route('/delivered_orders', methods=['GET'])
+def getDeliveredOrders():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    for order_id in order_ids:
-        c.execute("INSERT INTO orders VALUES (?, ?)", (order_id, deliveredDate))
-    conn.commit()
+    c.execute("SELECT * FROM delivered_orders")
+    rows = c.fetchall()
     conn.close()
+    return json.dumps(rows)
+
+# search by order id return no result found if not found
+@app.route('/delivered_orders/<order_id>', methods=['GET'])
+def getDeliveredOrder(order_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM delivered_orders WHERE order_id = ?", (order_id,))
+    rows = c.fetchall()
+    conn.close()
+    # if no result found, return 404
+    if len(rows) == 0:
+        return 'no result found', 404
+    return json.dumps(rows)
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
