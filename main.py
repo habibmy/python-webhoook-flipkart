@@ -3,6 +3,14 @@ from bs4 import BeautifulSoup as bs
 import json
 import sqlite3
 
+# check if database exists, if not, create it
+conn = sqlite3.connect('/data/database.db')
+c = conn.cursor()
+c.execute('''CREATE TABLE IF NOT EXISTS delivered_orders
+                (order_id text, delivered_date text)''')
+conn.commit()
+conn.close()
+
 def saveToDatabase(deliveredDate, order_ids):
     conn = sqlite3.connect('/data/database.db')
     c = conn.cursor()
