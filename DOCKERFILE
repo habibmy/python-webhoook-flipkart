@@ -15,9 +15,6 @@ RUN apk add --no-cache --virtual .build-deps build-base \
 # Copy the application code to the container
 COPY . .
 
-# Run the table-init.py script to initialize the database tables
-RUN python table-init.py
-
 # Expose the port on which the Flask application runs
 EXPOSE 5000
 
