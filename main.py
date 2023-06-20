@@ -4,7 +4,7 @@ import json
 import sqlite3
 
 def saveToDatabase(deliveredDate, order_ids):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('/data/database.db')
     c = conn.cursor()
     for order_id in order_ids:
         c.execute("INSERT INTO delivered_orders VALUES (?, ?)", (order_id, deliveredDate))
@@ -20,7 +20,7 @@ def index():
 
 @app.route('/delivered_orders', methods=['GET'])
 def getDeliveredOrders():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('/data/database.db')
     c = conn.cursor()
     c.execute("SELECT * FROM delivered_orders")
     rows = c.fetchall()
@@ -30,7 +30,7 @@ def getDeliveredOrders():
 # search by order id return no result found if not found
 @app.route('/delivered_orders/<order_id>', methods=['GET'])
 def getDeliveredOrder(order_id):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('/data/database.db')
     c = conn.cursor()
     c.execute("SELECT * FROM delivered_orders WHERE order_id = ?", (order_id,))
     rows = c.fetchall()
